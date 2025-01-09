@@ -15,11 +15,12 @@
         android:text="@string/login" />
 
     <EditText
-        android:id="@+id/usernameEditText"
+        android:id="@+id/emailEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/username"
-        android:autofillHints="username" />
+        android:hint="@string/email_address"
+        android:autofillHints="email"
+        android:inputType="textEmailAddress" />
 
     <EditText
         android:id="@+id/passwordEditText"

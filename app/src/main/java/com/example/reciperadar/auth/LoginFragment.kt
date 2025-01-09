@@ -1,9 +1,11 @@
 package com.example.reciperadar.auth
 
 import android.os.Bundle
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.reciperadar.R
 import com.example.reciperadar.databinding.LoginFragmentBinding
@@ -44,20 +46,41 @@ class LoginFragment : Fragment() {
     }
 
     private fun loginEvent() {
-        val username = binding.usernameEditText.text.toString()
+        val email = binding.emailEditText.text.toString()
         val password = binding.passwordEditText.text.toString()
 
         // Add your login logic here
-        if (validateInput(username, password)) {
-            // Proceed to next screen or show success message
-        } else {
-            // Show error message
+        if (validateInput(email, password)) {
+            val auth = Authenticator(requireActivity() as AppCompatActivity)
+
+            auth.login(email, password)
         }
     }
 
-    private fun validateInput(username: String, password: String): Boolean {
-        // Basic validation logic
-        return username.isNotEmpty() && password.isNotEmpty()
+    private fun validateInput(email: String, password: String): Boolean {
+
+        var isValid = true
+
+        // Validate Email
+        if (email.isEmpty()) {
+            binding.emailEditText.error = "Email cannot be empty"
+            isValid = false
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.emailEditText.error = "Please enter a valid email"
+            isValid = false
+        } else {
+            binding.emailEditText.error = null
+        }
+
+        // Validate Password
+        if (password.isEmpty()) {
+            binding.passwordEditText.error = "Password cannot be empty"
+            isValid = false
+        } else {
+            binding.passwordEditText.error = null
+        }
+
+        return isValid
     }
 
     override fun onDestroyView() {
