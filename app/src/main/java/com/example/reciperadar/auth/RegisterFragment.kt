@@ -1,16 +1,21 @@
 package com.example.reciperadar.auth
 
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.reciperadar.R
 import com.example.reciperadar.databinding.LoginFragmentBinding
 import com.example.reciperadar.databinding.RegisterFragmentBinding
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class RegisterFragment : Fragment() {
     private var _binding: RegisterFragmentBinding? = null
@@ -29,19 +34,24 @@ class RegisterFragment : Fragment() {
 
         binding.registerButton.setOnClickListener {
             registerEvent()
+            Log.d("button pressed", "one")
         }
 
         binding.backToRLoginButton.setOnClickListener {
-            backToLoginEvent()
+            backToLoginEvent(null)
         }
     }
 
-    private fun backToLoginEvent() {
+    private fun backToLoginEvent(bundle: Bundle?) {
         parentFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        val fragment = LoginFragment()
+        if (bundle != null) {
+            fragment.arguments = bundle
+        }
         parentFragmentManager.beginTransaction()
             .replace(
                 R.id.auth_fragment_container,
-                LoginFragment()
+                fragment
             )
             .commit()
     }
@@ -55,8 +65,28 @@ class RegisterFragment : Fragment() {
         // Add your login logic here
         if (validateInput(username, email, password, confirmPassword)) {
             val auth = Authenticator(requireActivity() as AppCompatActivity)
+            auth.register(username, email, password, object : AuthCallBack {
+                override fun onSuccess() {
+                    val bundle = Bundle()
+                    bundle.putString("emailEditTextValue", email)
 
-            auth.register(username, email, password)
+                    backToLoginEvent(bundle)
+                }
+
+                override fun onError(message: String?) {
+                    val gson = Gson()
+                    val type = object : TypeToken<Map<String, Any>>() {}.type
+                    val map: Map<String, Any> = gson.fromJson(message, type)
+
+                    binding.emailEditText.error = map["message"].toString()
+
+                    binding.registerButton.isEnabled = true
+                    binding.backToRLoginButton.isEnabled = true
+
+                }
+            })
+            binding.registerButton.isEnabled = false
+            binding.backToRLoginButton.isEnabled = false
         }
     }
 
@@ -68,8 +98,6 @@ class RegisterFragment : Fragment() {
         if (username.isEmpty()) {
             binding.usernameEditText.error = "Username cannot be empty"
             isValid = false
-        } else {
-            binding.usernameEditText.error = null
         }
 
         // Validate Email
@@ -79,16 +107,12 @@ class RegisterFragment : Fragment() {
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             binding.emailEditText.error = "Please enter a valid email"
             isValid = false
-        } else {
-            binding.emailEditText.error = null
         }
 
         // Validate Password
         if (password.isEmpty()) {
             binding.passwordEditText.error = "Password cannot be empty"
             isValid = false
-        } else {
-            binding.passwordEditText.error = null
         }
 
         // Validate Confirm Password
@@ -98,8 +122,6 @@ class RegisterFragment : Fragment() {
         } else if (confirmPassword != password) {
             binding.confirmPasswordEditText.error = "Passwords do not match"
             isValid = false
-        } else {
-            binding.confirmPasswordEditText.error = null
         }
 
         return isValid

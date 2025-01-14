@@ -1,4 +1,4 @@
-package com.example.reciperadar
+package com.example.reciperadar.app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

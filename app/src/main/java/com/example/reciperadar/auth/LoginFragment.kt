@@ -1,5 +1,6 @@
 package com.example.reciperadar.auth
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.reciperadar.R
+import com.example.reciperadar.app.MainActivity
 import com.example.reciperadar.databinding.LoginFragmentBinding
 
 class LoginFragment : Fragment() {
@@ -25,6 +27,14 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //set email if successful registration
+        arguments?.let {
+            val value = it.getString("emailEditTextValue")
+
+            binding.emailEditText.setText(value)
+        }
+
+        //onClick listeners
         binding.loginButton.setOnClickListener {
             loginEvent()
         }
@@ -45,15 +55,33 @@ class LoginFragment : Fragment() {
             .commit()
     }
 
+    private fun goToMainMenuEvent() {
+        val intent = Intent(requireActivity(), MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        requireActivity().finish()
+    }
+
     private fun loginEvent() {
         val email = binding.emailEditText.text.toString()
         val password = binding.passwordEditText.text.toString()
 
-        // Add your login logic here
         if (validateInput(email, password)) {
             val auth = Authenticator(requireActivity() as AppCompatActivity)
 
-            auth.login(email, password)
+            binding.loginButton.isEnabled = false
+            binding.goToRegisterButton.isEnabled = false
+
+            auth.login(email, password, object : AuthCallBack {
+                override fun onSuccess() {
+                    goToMainMenuEvent()
+                }
+
+                override fun onError(message: String?) {
+                    //no implementation
+                }
+
+            })
         }
     }
 
