@@ -10,4 +10,7 @@
     <string name="confirm_password">Confirm password</string>
     <string name="email_address">Email address</string>
     <string name="empty">empty</string>
+    <string name="button">Button</string>
+    <string name="new_ingredient">New Ingredient</string>
+    <string name="set_equipment">Set Equipment</string>
 </resources>
