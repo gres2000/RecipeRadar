@@ -4,11 +4,10 @@ import android.content.Context.MODE_PRIVATE
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.reciperadar.R
-import com.example.reciperadar.api_service.data_classes.LoginData
-import com.example.reciperadar.api_service.data_classes.LoginResponseData
-import com.example.reciperadar.api_service.data_classes.RegisterData
-import com.example.reciperadar.api_service.data_classes.RegisterResponseData
+import com.example.reciperadar.api_service.data_classes.login.LoginData
+import com.example.reciperadar.api_service.data_classes.login.LoginResponseData
+import com.example.reciperadar.api_service.data_classes.register.RegisterData
+import com.example.reciperadar.api_service.data_classes.register.RegisterResponseData
 import com.example.reciperadar.api_service.RetrofitClient
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -22,10 +21,11 @@ interface AuthCallBack {
     fun onSuccess()
     fun onError(message: String?)
 }
+
 class Authenticator(val activity: AppCompatActivity) {
     val sharedPref = activity.getSharedPreferences("jwt_token", MODE_PRIVATE)!!
 
-    fun login(email: String, password: String, callback: AuthCallBack ) {
+    fun login(email: String, password: String, callback: AuthCallBack) {
         val request = LoginData(email, password)
         Log.d("DATALOG", request.toString())
         RetrofitClient.apiService.loginUser(request).enqueue(object : Callback<LoginResponseData> {

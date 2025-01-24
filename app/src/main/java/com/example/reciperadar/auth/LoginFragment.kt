@@ -45,6 +45,7 @@ class LoginFragment : Fragment() {
             goToRegisterEvent()
         }
     }
+
     private fun goToRegisterEvent() {
         parentFragmentManager.beginTransaction()
             .replace(
@@ -80,7 +81,6 @@ class LoginFragment : Fragment() {
                 override fun onError(message: String?) {
                     //no implementation
                 }
-
             })
         }
     }

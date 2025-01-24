@@ -1,11 +1,11 @@
 package com.example.reciperadar.api_service
 
-import com.example.reciperadar.api_service.data_classes.LoginData
-import com.example.reciperadar.api_service.data_classes.LoginResponseData
-import com.example.reciperadar.api_service.data_classes.RegisterData
-import com.example.reciperadar.api_service.data_classes.RegisterResponseData
-import com.example.reciperadar.api_service.data_classes.TokenData
-import com.example.reciperadar.api_service.data_classes.TokenResponseData
+import com.example.reciperadar.api_service.data_classes.login.LoginData
+import com.example.reciperadar.api_service.data_classes.login.LoginResponseData
+import com.example.reciperadar.api_service.data_classes.register.RegisterData
+import com.example.reciperadar.api_service.data_classes.register.RegisterResponseData
+import com.example.reciperadar.api_service.data_classes.token.TokenData
+import com.example.reciperadar.api_service.data_classes.token.TokenResponseData
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Headers

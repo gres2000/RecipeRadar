@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.Fragment
 import com.example.reciperadar.R
+import com.example.reciperadar.app.ingredients.Ingredient
 import com.example.reciperadar.app.ingredients.IngredientsFragment
 import com.example.reciperadar.app.new_recipe.NewRecipeFragment
 import com.example.reciperadar.app.recipes.RecipesFragment
@@ -23,6 +24,8 @@ import com.example.reciperadar.ui.theme.RecipeRadarTheme
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: MainActivityBinding
+
+    private val ingredientsList = mutableListOf<Ingredient>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -43,7 +46,6 @@ class MainActivity : AppCompatActivity() {
             loadFragment(fragment)
             true
         }
-
     }
 
     private fun loadFragment(fragment: Fragment) {
@@ -52,4 +54,7 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
+    fun addNewIngredient(ing: Ingredient) {
+        ingredientsList.add(ing)
+    }
 }

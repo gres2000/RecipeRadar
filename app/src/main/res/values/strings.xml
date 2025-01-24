@@ -13,4 +13,24 @@
     <string name="button">Button</string>
     <string name="new_ingredient">New Ingredient</string>
     <string name="set_equipment">Set Equipment</string>
+    <string name="name">Name</string>
+    <string name="desc">Desc.</string>
+    <string name="start_typing">Start typing...</string>
+    <string name="quantity">Quantity</string>
+    <string name="calories">Calories</string>
+    <string name="kcal">kcal</string>
+    <string name="save">Save</string>
+    <string name="close">Close</string>
+    <string name="date">Date</string>
+    <string name="expiry">Expiry</string>
+    <string name="open_datepicker">open datepicker</string>
+    <string name="dot">.</string>
+    <string name="hyphen">-</string>
+    <string name="additional_details">Additional details</string>
+    <string name="g">g</string>
+    <string name="sugar">Sugar</string>
+    <string name="fiber">Fiber</string>
+    <string name="protein">Protein</string>
+    <string name="fat">Fat</string>
+    <string name="carbohydrate">Carbohydrate</string>
 </resources>

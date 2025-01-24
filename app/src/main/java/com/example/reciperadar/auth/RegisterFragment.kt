@@ -82,7 +82,6 @@ class RegisterFragment : Fragment() {
 
                     binding.registerButton.isEnabled = true
                     binding.backToRLoginButton.isEnabled = true
-
                 }
             })
             binding.registerButton.isEnabled = false

@@ -1,6 +1,385 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:background="@color/light_gray"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!--    <View-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:background="@android:color/black"-->
+    <!--        android:alpha="0.5" />-->
+
+    <TextView
+        android:id="@+id/overlayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_ingredient"
+        android:textSize="24sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/name"
+            android:textSize="14sp" />
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/start_typing"
+            android:inputType="text"
+            android:padding="14dp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/desc"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/description_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="Short description"
+            android:inputType="text" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="start|center"
+            android:text="@string/quantity"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/quantity_edit_text"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:autofillHints="Short description"
+            android:gravity="end"
+            android:inputType="number"
+            android:maxLength="6" />
+
+        <Spinner
+            android:id="@+id/unit_spinner"
+            android:layout_width="120dp"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/calories"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/kcal_edit_text"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:autofillHints="Short description"
+            android:gravity="end"
+            android:inputType="number"
+            android:maxLength="6" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/kcal"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/expiry"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/year_edit_text"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:autofillHints="date"
+            android:inputType="date"
+            android:maxLength="4"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/hyphen"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/month_edit_text"
+            android:layout_width="28dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:autofillHints="date"
+            android:inputType="date"
+            android:maxLength="2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/hyphen"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/day_edit_text"
+            android:layout_width="28dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:autofillHints="date"
+            android:inputType="date"
+            android:maxLength="2" />
+
+        <ImageButton
+            android:id="@+id/date_picker_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/open_datepicker"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            android:src="@drawable/calendar_48" />
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/toggleDetailsButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/additional_details"
+        android:layout_gravity="start"/>
+
+    <!-- Additional Details Section (Initially Hidden) -->
+    <LinearLayout
+        android:id="@+id/additionalDetailsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingTop="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/sugar"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/sugar_edit_text"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:autofillHints="Short description"
+                android:gravity="end"
+                android:inputType="number"
+                android:maxLength="6" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/g"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/fiber"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/fiber_edit_text"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:autofillHints="Short description"
+                android:gravity="end"
+                android:inputType="number"
+                android:maxLength="6" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/g"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/protein"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/protein_edit_text"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:autofillHints="Short description"
+                android:gravity="end"
+                android:inputType="number"
+                android:maxLength="6" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/g"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/fat"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/fat_edit_text"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:autofillHints="Short description"
+                android:gravity="end"
+                android:inputType="number"
+                android:maxLength="6" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/g"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/carbohydrate"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/carbohydrate_edit_text"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:autofillHints="Short description"
+                android:gravity="end"
+                android:inputType="number"
+                android:maxLength="6" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/kcal"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/close_button"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+
+            android:layout_marginEnd="15dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="@string/close"
+            android:textColor="@color/black" />
+
+        <Button
+            android:id="@+id/save_button"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="15dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="@string/save"
+            android:textColor="@color/black" />
+
+    </LinearLayout>
+
+</LinearLayout>
