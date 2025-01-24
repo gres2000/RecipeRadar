@@ -41,33 +41,97 @@ class NewIngredientWindowFragment : DialogFragment() {
 
         val saveButton = binding.saveButton
         saveButton.setOnClickListener {
-            val newIngredient = Ingredient(
-                binding.autoCompleteTextView.text.toString(),
-                binding.descriptionEditText.text?.toString(),
-                binding.quantityEditText.text.toString().toFloat(),
-                binding.unitSpinner.selectedItem.toString(),
-                binding.kcalEditText.text.toString().toInt(),
-                LocalDate.of(
-                    binding.yearEditText.text.toString().toInt(),
-                    binding.monthEditText.text.toString().toInt(),
-                    binding.dayEditText.text.toString().toInt()
-                ),
-                binding.sugarEditText.text?.toString()?.toIntOrNull(),
-                binding.fiberEditText.text?.toString()?.toIntOrNull(),
-                binding.proteinEditText.text?.toString()?.toIntOrNull(),
-                binding.fatEditText.text?.toString()?.toIntOrNull(),
-                binding.carbohydrateEditText.text?.toString()?.toIntOrNull()
-            )
 
-            (requireActivity() as MainActivity).addNewIngredient(newIngredient)
-            dismiss()
+            if (validateInputs()) {
+                var date: LocalDate? = null
+                if (binding.switchExpiryButton.isChecked) {
+                    date = LocalDate.of(
+                        binding.yearEditText.text.toString().toInt(),
+                        binding.monthEditText.text.toString().toInt(),
+                        binding.dayEditText.text.toString().toInt()
+                    )
+                }
+                val newIngredient = Ingredient(
+                    binding.autoCompleteTextView.text.toString(),
+                    binding.descriptionEditText.text?.toString(),
+                    binding.quantityEditText.text.toString().toFloat(),
+                    binding.unitSpinner.selectedItem.toString(),
+                    binding.kcalEditText.text?.toString()?.toIntOrNull(),
+                    date,
+                    binding.sugarEditText.text?.toString()?.toIntOrNull(),
+                    binding.fiberEditText.text?.toString()?.toIntOrNull(),
+                    binding.proteinEditText.text?.toString()?.toIntOrNull(),
+                    binding.fatEditText.text?.toString()?.toIntOrNull(),
+                    binding.carbohydrateEditText.text?.toString()?.toIntOrNull()
+                )
+
+                (requireActivity() as MainActivity).addNewIngredient(newIngredient)
+                dismiss()
+            }
         }
 
+        setupExpiry()
         setupAutoCompleteSearchBar()
         setupUnitBar()
         setupExpiryEditText()
         setupDatePickerImageButton()
         setupToggleDetailsButton()
+    }
+
+    private fun setupExpiry() {
+        binding.switchExpiryButton.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                binding.yearEditText.isEnabled = true
+                binding.monthEditText.isEnabled = true
+                binding.dayEditText.isEnabled = true
+                binding.datePickerImageButton.isEnabled = true
+                binding.datePickerImageButton.setBackgroundColor(Color.parseColor("#FFFFFF"))
+            } else {
+                binding.yearEditText.isEnabled = false
+                binding.monthEditText.isEnabled = false
+                binding.dayEditText.isEnabled = false
+                binding.datePickerImageButton.isEnabled = false
+                binding.datePickerImageButton.setBackgroundColor(Color.parseColor("#787878"))
+            }
+        }
+    }
+
+    private fun validateInputs(): Boolean {
+        var isValid = true
+
+        if (binding.autoCompleteTextView.text.toString().isBlank()) {
+            binding.autoCompleteTextView.error = "This field is required"
+            isValid = false
+        }
+
+        if (binding.quantityEditText.text.toString().isBlank()) {
+            binding.quantityEditText.error = "Quantity is required"
+            isValid = false
+        }
+
+
+        if(binding.switchExpiryButton.isChecked){
+            if (binding.yearEditText.text.toString().isBlank() ||
+                binding.monthEditText.text.toString().isBlank() ||
+                binding.dayEditText.text.toString().isBlank()
+            ) {
+                binding.yearEditText.error = "Year is required"
+                binding.monthEditText.error = "Month is required"
+                binding.dayEditText.error = "Day is required"
+                isValid = false
+            } else if (
+                binding.yearEditText.text.toString().toIntOrNull() == null ||
+                binding.monthEditText.text.toString().toIntOrNull() == null ||
+                binding.dayEditText.text.toString().toIntOrNull() == null
+            ) {
+                binding.yearEditText.error = "Enter a valid year"
+                binding.monthEditText.error = "Enter a valid month"
+                binding.dayEditText.error = "Enter a valid day"
+                isValid = false
+            }
+        }
+
+        return isValid
     }
 
     private fun setupToggleDetailsButton() {
