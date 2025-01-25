@@ -1,4 +1,4 @@
-package com.example.reciperadar.app.ingredients
+package com.example.reciperadar.app.ingredients.data_classes
 
 import java.time.LocalDate
 

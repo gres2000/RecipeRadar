@@ -13,7 +13,9 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.core.text.set
 import androidx.fragment.app.DialogFragment
+import com.example.reciperadar.R
 import com.example.reciperadar.app.MainActivity
+import com.example.reciperadar.app.ingredients.data_classes.Ingredient
 import com.example.reciperadar.databinding.NewIngredientWindowFragmentBinding
 import java.time.LocalDate
 
@@ -65,8 +67,13 @@ class NewIngredientWindowFragment : DialogFragment() {
                     binding.carbohydrateEditText.text?.toString()?.toIntOrNull()
                 )
 
+//                dismiss()
+                val dialog = parentFragmentManager.findFragmentById(R.id.main_container) as NewIngredientWindowFragment
+                parentFragmentManager.beginTransaction()
+                    .remove(dialog)
+                    .commitNow()
                 (requireActivity() as MainActivity).addNewIngredient(newIngredient)
-                dismiss()
+                (requireActivity() as MainActivity).notifyAdapter()
             }
         }
 

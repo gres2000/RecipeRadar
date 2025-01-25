@@ -1,18 +1,21 @@
 package com.example.reciperadar.app.ingredients
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.reciperadar.R
+import com.example.reciperadar.app.MainActivity
+import com.example.reciperadar.app.ingredients.data_classes.Ingredient
 import com.example.reciperadar.databinding.IngredientsFragmentBinding
-import com.example.reciperadar.databinding.LoginFragmentBinding
 import java.time.LocalDate
 
 class IngredientsFragment : Fragment() {
     private var _binding: IngredientsFragmentBinding? = null
+
     private val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,6 +48,14 @@ class IngredientsFragment : Fragment() {
                 )
                 .commit()
         }
+
+        setupRecyclerView()
+    }
+
+    private fun setupRecyclerView() {
+        val recyclerView: RecyclerView = binding.ingredientsRecyclerView
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = IngredientItemAdapter((requireActivity()as MainActivity).getIngredientList())
     }
 
     private fun updateIngredient(
@@ -64,5 +75,9 @@ class IngredientsFragment : Fragment() {
             expiry = expiry ?: ingredient.expiry,
             kcal = kcal ?: ingredient.kcal
         )
+    }
+
+    fun itemAdded(position: Int) {
+        binding.ingredientsRecyclerView.adapter?.notifyItemInserted(position)
     }
 }

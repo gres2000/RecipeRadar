@@ -1,31 +1,21 @@
 package com.example.reciperadar.app
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.Fragment
 import com.example.reciperadar.R
-import com.example.reciperadar.app.ingredients.Ingredient
+import com.example.reciperadar.app.ingredients.data_classes.Ingredient
 import com.example.reciperadar.app.ingredients.IngredientsFragment
 import com.example.reciperadar.app.new_recipe.NewRecipeFragment
 import com.example.reciperadar.app.recipes.RecipesFragment
 import com.example.reciperadar.app.settings.SettingsFragment
 import com.example.reciperadar.databinding.MainActivityBinding
-import com.example.reciperadar.ui.theme.RecipeRadarTheme
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: MainActivityBinding
 
-    private val ingredientsList = mutableListOf<Ingredient>()
+    private val ingredientList = mutableListOf<Ingredient>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,6 +45,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addNewIngredient(ing: Ingredient) {
-        ingredientsList.add(ing)
+        ingredientList.add(ing)
+    }
+
+    fun notifyAdapter() {
+        (supportFragmentManager.findFragmentById(R.id.main_container) as IngredientsFragment).itemAdded(ingredientList.size - 1)
+    }
+
+    fun getIngredientList():  MutableList<Ingredient> {
+        return ingredientList
     }
 }
