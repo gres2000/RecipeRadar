@@ -39,6 +39,7 @@ class Authenticator(val activity: AppCompatActivity) {
                     //set token in shared preferences
                     val editor = sharedPref.edit()
                     editor.putString("token", loginResponse!!.token).apply()
+                    editor.putString("userId", email).apply()
                     callback.onSuccess()
                 } else {
                     val loginResponse = response.errorBody()?.string()
@@ -90,6 +91,7 @@ class Authenticator(val activity: AppCompatActivity) {
                     //delete token from shared preferences
                     val editor = sharedPref.edit()
                     editor.remove("token").apply()
+                    editor.remove("userId").apply()
 
                     callback.onSuccess()
                 } else {
@@ -108,7 +110,10 @@ class Authenticator(val activity: AppCompatActivity) {
 
     //get token from shared preferences
     fun getToken(): String? {
-        val str = sharedPref.getString("token", null)
         return sharedPref.getString("token", null)
+    }
+
+    fun getUserId(): String? {
+        return sharedPref.getString("userId", null)
     }
 }

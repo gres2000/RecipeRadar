@@ -10,12 +10,14 @@ import android.view.View
 import android.view.View.OnKeyListener
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.TextView
 import androidx.core.text.set
 import androidx.fragment.app.DialogFragment
 import com.example.reciperadar.R
 import com.example.reciperadar.app.MainActivity
 import com.example.reciperadar.app.ingredients.data_classes.Ingredient
+import com.example.reciperadar.auth.Authenticator
 import com.example.reciperadar.databinding.NewIngredientWindowFragmentBinding
 import java.time.LocalDate
 
@@ -42,6 +44,17 @@ class NewIngredientWindowFragment : DialogFragment() {
         }
 
         val saveButton = binding.saveButton
+        setupSaveButton(saveButton)
+
+        setupExpiry()
+        setupAutoCompleteSearchBar()
+        setupUnitBar()
+        setupExpiryEditText()
+        setupDatePickerImageButton()
+        setupToggleDetailsButton()
+    }
+
+    private fun setupSaveButton(saveButton: Button) {
         saveButton.setOnClickListener {
 
             if (validateInputs()) {
@@ -67,23 +80,17 @@ class NewIngredientWindowFragment : DialogFragment() {
                     binding.carbohydrateEditText.text?.toString()?.toIntOrNull()
                 )
 
-//                dismiss()
+    //                dismiss()
                 val dialog = parentFragmentManager.findFragmentById(R.id.main_container) as NewIngredientWindowFragment
                 parentFragmentManager.beginTransaction()
                     .remove(dialog)
                     .commitNow()
-                (requireActivity() as MainActivity).addNewIngredient(newIngredient)
+                val auth = Authenticator(requireActivity() as MainActivity)
+                (requireActivity() as MainActivity).addNewIngredient(newIngredient, auth.getUserId() )
                 (requireActivity() as MainActivity).uploadIngredients()
                 (requireActivity() as MainActivity).notifyAdapter()
             }
         }
-
-        setupExpiry()
-        setupAutoCompleteSearchBar()
-        setupUnitBar()
-        setupExpiryEditText()
-        setupDatePickerImageButton()
-        setupToggleDetailsButton()
     }
 
     private fun setupExpiry() {

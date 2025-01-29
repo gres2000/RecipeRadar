@@ -62,7 +62,9 @@ class MainActivity : AppCompatActivity() {
         //read ingredients from internal memory
         CoroutineScope(Dispatchers.IO).launch {
             dataArrived = false
-            ingredientList.addAll(readListAsync("ingredients"))
+            val auth = Authenticator(this@MainActivity)
+            val userId = auth.getUserId()
+            ingredientList.addAll(readListAsync("{$userId}ingredients"))
             dataArrived = true
         }
 
@@ -130,9 +132,9 @@ class MainActivity : AppCompatActivity() {
             .commitNow()
     }
 
-    fun addNewIngredient(ing: Ingredient) {
+    fun addNewIngredient(ing: Ingredient, userId: String?) {
         ingredientList.add(ing)
-        saveListAsync("ingredients", ingredientList)
+        saveListAsync("{$userId}ingredients", ingredientList)
     }
 
     fun notifyAdapter() {
