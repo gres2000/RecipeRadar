@@ -27,7 +27,6 @@ class Authenticator(val activity: AppCompatActivity) {
 
     fun login(email: String, password: String, callback: AuthCallBack) {
         val request = LoginData(email, password)
-        Log.d("DATALOG", request.toString())
         RetrofitClient.apiService.loginUser(request).enqueue(object : Callback<LoginResponseData> {
             override fun onResponse(call: Call<LoginResponseData>, response: Response<LoginResponseData>) {
 

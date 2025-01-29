@@ -73,6 +73,7 @@ class NewIngredientWindowFragment : DialogFragment() {
                     .remove(dialog)
                     .commitNow()
                 (requireActivity() as MainActivity).addNewIngredient(newIngredient)
+                (requireActivity() as MainActivity).uploadIngredients()
                 (requireActivity() as MainActivity).notifyAdapter()
             }
         }

@@ -1,6 +1,9 @@
 package com.example.reciperadar.app.ingredients
 
+import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +14,14 @@ import com.example.reciperadar.R
 import com.example.reciperadar.app.MainActivity
 import com.example.reciperadar.app.ingredients.data_classes.Ingredient
 import com.example.reciperadar.databinding.IngredientsFragmentBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class IngredientsFragment : Fragment() {
+
     private var _binding: IngredientsFragmentBinding? = null
 
     private val binding get() = _binding!!
@@ -31,7 +39,7 @@ class IngredientsFragment : Fragment() {
 
         val newIngredientButton = binding.newIngredientButton
 
-
+        startIngredientsLoading()
         newIngredientButton.setOnClickListener {
             val overlayFragment = NewIngredientWindowFragment()
 
@@ -55,7 +63,8 @@ class IngredientsFragment : Fragment() {
     private fun setupRecyclerView() {
         val recyclerView: RecyclerView = binding.ingredientsRecyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = IngredientItemAdapter((requireActivity()as MainActivity).getIngredientList())
+        val ingredients = (requireActivity() as MainActivity).getIngredientList()
+        recyclerView.adapter = IngredientItemAdapter(ingredients)
     }
 
     private fun updateIngredient(
@@ -79,5 +88,29 @@ class IngredientsFragment : Fragment() {
 
     fun itemAdded(position: Int) {
         binding.ingredientsRecyclerView.adapter?.notifyItemInserted(position)
+
+    }
+
+    private fun startIngredientsLoading() {
+        val handler = Handler(Looper.getMainLooper())
+        val runnable = object : Runnable {
+            override fun run() {
+                val ingredientsList = (requireActivity() as MainActivity).getIngredientList()
+                if (ingredientsList.isNotEmpty()) {
+                    // Ingredients are loaded, proceed with the next task
+                    proceedWithLoadedIngredients(ingredientsList)
+                } else {
+                    // Continue checking every 200 milliseconds if not loaded yet
+                    handler.postDelayed(this, 200)
+                }
+            }
+        }
+        handler.post(runnable)
+    }
+
+    private fun proceedWithLoadedIngredients(ingredientsList: MutableList<Ingredient>) {
+        val recyclerView = binding.ingredientsRecyclerView
+        recyclerView.adapter = IngredientItemAdapter(ingredientsList)
+        (recyclerView.adapter as IngredientItemAdapter).notifyDataSetChanged()
     }
 }

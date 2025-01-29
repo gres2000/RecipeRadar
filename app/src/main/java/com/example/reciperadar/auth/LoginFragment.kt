@@ -79,7 +79,8 @@ class LoginFragment : Fragment() {
                 }
 
                 override fun onError(message: String?) {
-                    //no implementation
+                    binding.loginButton.isEnabled = true
+                    binding.goToRegisterButton.isEnabled = true
                 }
             })
         }
