@@ -27,7 +27,7 @@ interface ApiService {
 
     @Headers("Accept: application/json")
     @POST("logout")
-    fun logoutUser(@Body token: TokenData): Call<TokenResponseData>
+    fun logoutUser(@Header("Authorization") token: String?): Call<TokenResponseData>
 
     //ingredients
     @Headers("Accept: application/json")

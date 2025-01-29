@@ -7,6 +7,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,6 +41,12 @@ class IngredientsFragment : Fragment() {
         val newIngredientButton = binding.newIngredientButton
 
         startIngredientsLoading()
+        setupNewIngredientButton(newIngredientButton)
+
+        setupRecyclerView()
+    }
+
+    private fun setupNewIngredientButton(newIngredientButton: Button) {
         newIngredientButton.setOnClickListener {
             val overlayFragment = NewIngredientWindowFragment()
 
@@ -56,8 +63,6 @@ class IngredientsFragment : Fragment() {
                 )
                 .commit()
         }
-
-        setupRecyclerView()
     }
 
     private fun setupRecyclerView() {
@@ -96,7 +101,7 @@ class IngredientsFragment : Fragment() {
         val runnable = object : Runnable {
             override fun run() {
                 val ingredientsList = (requireActivity() as MainActivity).getIngredientList()
-                if (ingredientsList.isNotEmpty()) {
+                if ((requireActivity() as MainActivity).dataArrived) {
                     // Ingredients are loaded, proceed with the next task
                     proceedWithLoadedIngredients(ingredientsList)
                 } else {

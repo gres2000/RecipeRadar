@@ -33,4 +33,5 @@
     <string name="protein">Protein</string>
     <string name="fat">Fat</string>
     <string name="carbohydrate">Carbohydrate</string>
+    <string name="log_out">Log out</string>
 </resources>

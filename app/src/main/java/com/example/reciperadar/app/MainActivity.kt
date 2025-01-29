@@ -1,7 +1,12 @@
 package com.example.reciperadar.app
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -10,14 +15,17 @@ import com.example.reciperadar.api_service.RetrofitClient
 import com.example.reciperadar.api_service.data_classes.ingredients.IngredientsListData
 import com.example.reciperadar.api_service.data_classes.ingredients.IngredientsListResponseData
 import com.example.reciperadar.api_service.data_classes.register.RegisterResponseData
+import com.example.reciperadar.api_service.data_classes.token.TokenData
 import com.example.reciperadar.app.ingredients.data_classes.Ingredient
 import com.example.reciperadar.app.ingredients.IngredientsFragment
 import com.example.reciperadar.app.new_recipe.NewRecipeFragment
 import com.example.reciperadar.app.recipes.RecipesFragment
 import com.example.reciperadar.app.settings.SettingsFragment
+import com.example.reciperadar.auth.AuthActivity
 import com.example.reciperadar.auth.AuthCallBack
 import com.example.reciperadar.auth.Authenticator
 import com.example.reciperadar.databinding.MainActivityBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
@@ -36,6 +44,7 @@ interface IngredientsCallBack {
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: MainActivityBinding
+    var dataArrived = false
 
     private val ingredientList = mutableListOf<Ingredient>()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,16 +54,63 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val bottomNavigationView = binding.bottomNavigationView
+        val profileImageButton = binding.profileButton
 
         val fragment = IngredientsFragment()
         loadFragment(fragment)
 
         //read ingredients from internal memory
         CoroutineScope(Dispatchers.IO).launch {
+            dataArrived = false
             ingredientList.addAll(readListAsync("ingredients"))
+            dataArrived = true
         }
 
 
+        setupBottomNavigationView(bottomNavigationView)
+        setupProfileButton(profileImageButton)
+    }
+
+    private fun setupProfileButton(profileButton: ImageButton) {
+        profileButton.setOnClickListener{
+            val popupMenu = PopupMenu(this, profileButton)
+
+            menuInflater.inflate(R.menu.profile_menu, popupMenu.menu)
+
+            popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
+                when (menuItem.itemId) {
+                    R.id.menu_item_1 -> {
+                        // Handle click for menu item 1
+                        val auth = Authenticator(this@MainActivity)
+                        auth.logout(object : AuthCallBack {
+                            override fun onSuccess() {
+
+                                goToAuthActivity()
+                            }
+
+                            override fun onError(message: String?) {
+                                //pass
+                            }
+                        })
+                        true
+                    }
+                    else -> false
+                }
+
+            }
+            popupMenu.show()
+        }
+
+    }
+
+    private fun goToAuthActivity() {
+        val intent = Intent(this@MainActivity, AuthActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        this@MainActivity.finish()
+    }
+
+    private fun setupBottomNavigationView(bottomNavigationView: BottomNavigationView) {
         bottomNavigationView.setOnItemSelectedListener { item ->
             val fragment: Fragment = when (item.itemId) {
                 R.id.nav_ingredients -> IngredientsFragment()
@@ -111,7 +167,8 @@ class MainActivity : AppCompatActivity() {
     private fun sendIngredientsRequest(callback: AuthCallBack) {
         val request = IngredientsListData(ingredientList)
         val auth = Authenticator(this@MainActivity)
-        RetrofitClient.apiService.uploadIngredients(auth.getToken(), request).enqueue(object : Callback<IngredientsListResponseData> {
+        val token = "Bearer " + auth.getToken()
+        RetrofitClient.apiService.uploadIngredients(token, request).enqueue(object : Callback<IngredientsListResponseData> {
             //local response
             override fun onResponse(call: Call<IngredientsListResponseData>, response: Response<IngredientsListResponseData>) {
 

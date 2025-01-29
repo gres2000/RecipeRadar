@@ -9,6 +9,8 @@ import com.example.reciperadar.api_service.data_classes.login.LoginResponseData
 import com.example.reciperadar.api_service.data_classes.register.RegisterData
 import com.example.reciperadar.api_service.data_classes.register.RegisterResponseData
 import com.example.reciperadar.api_service.RetrofitClient
+import com.example.reciperadar.api_service.data_classes.token.TokenData
+import com.example.reciperadar.api_service.data_classes.token.TokenResponseData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import retrofit2.Call
@@ -78,8 +80,35 @@ class Authenticator(val activity: AppCompatActivity) {
         })
     }
 
+    fun logout(callback: AuthCallBack) {
+        val token = "Bearer " + getToken()
+        RetrofitClient.apiService.logoutUser(token).enqueue(object : Callback<TokenResponseData> {
+            override fun onResponse(call: Call<TokenResponseData>, response: Response<TokenResponseData>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(activity, "Logout Successful", Toast.LENGTH_SHORT).show()
+
+                    //delete token from shared preferences
+                    val editor = sharedPref.edit()
+                    editor.remove("token").apply()
+
+                    callback.onSuccess()
+                } else {
+                    val errorResponse = response.errorBody()?.string()
+                    Toast.makeText(activity, errorResponse, Toast.LENGTH_SHORT).show()
+                    callback.onError(errorResponse)
+                }
+            }
+
+            override fun onFailure(call: Call<TokenResponseData>, t: Throwable) {
+                Toast.makeText(activity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                callback.onError("Network Error: ${t.message}")
+            }
+        })
+    }
+
     //get token from shared preferences
     fun getToken(): String? {
+        val str = sharedPref.getString("token", null)
         return sharedPref.getString("token", null)
     }
 }
