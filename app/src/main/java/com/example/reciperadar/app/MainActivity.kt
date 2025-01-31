@@ -169,7 +169,7 @@ class MainActivity : AppCompatActivity() {
     private fun sendIngredientsRequest(callback: AuthCallBack) {
         val request = IngredientsListData(ingredientList)
         val auth = Authenticator(this@MainActivity)
-        val token = "Bearer " + auth.getToken()
+        val token = auth.getToken()
         RetrofitClient.apiService.uploadIngredients(token, request).enqueue(object : Callback<IngredientsListResponseData> {
             //local response
             override fun onResponse(call: Call<IngredientsListResponseData>, response: Response<IngredientsListResponseData>) {

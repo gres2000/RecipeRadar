@@ -43,6 +43,8 @@ class IngredientsFragment : Fragment() {
         startIngredientsLoading()
         setupNewIngredientButton(newIngredientButton)
 
+
+
         setupRecyclerView()
     }
 

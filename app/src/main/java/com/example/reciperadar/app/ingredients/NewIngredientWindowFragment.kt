@@ -2,8 +2,11 @@ package com.example.reciperadar.app.ingredients
 
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -12,13 +15,20 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.text.set
 import androidx.fragment.app.DialogFragment
 import com.example.reciperadar.R
+import com.example.reciperadar.api_service.RetrofitClient
 import com.example.reciperadar.app.MainActivity
 import com.example.reciperadar.app.ingredients.data_classes.Ingredient
+import com.example.reciperadar.app.ingredients.data_classes.IngredientResponseData
+import com.example.reciperadar.app.ingredients.data_classes.PaginatedResponseData
 import com.example.reciperadar.auth.Authenticator
 import com.example.reciperadar.databinding.NewIngredientWindowFragmentBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.time.LocalDate
 
 class NewIngredientWindowFragment : DialogFragment() {
@@ -26,6 +36,8 @@ class NewIngredientWindowFragment : DialogFragment() {
     private val binding get() = _binding!!
 
     private var editTextHelper = true
+
+    private var selectedIngredientId = 0
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -67,6 +79,7 @@ class NewIngredientWindowFragment : DialogFragment() {
                     )
                 }
                 val newIngredient = Ingredient(
+                    selectedIngredientId,
                     binding.autoCompleteTextView.text.toString(),
                     binding.descriptionEditText.text?.toString(),
                     binding.quantityEditText.text.toString().toFloat(),
@@ -80,13 +93,13 @@ class NewIngredientWindowFragment : DialogFragment() {
                     binding.carbohydrateEditText.text?.toString()?.toIntOrNull()
                 )
 
-    //                dismiss()
+                //                dismiss()
                 val dialog = parentFragmentManager.findFragmentById(R.id.main_container) as NewIngredientWindowFragment
                 parentFragmentManager.beginTransaction()
                     .remove(dialog)
                     .commitNow()
                 val auth = Authenticator(requireActivity() as MainActivity)
-                (requireActivity() as MainActivity).addNewIngredient(newIngredient, auth.getUserId() )
+                (requireActivity() as MainActivity).addNewIngredient(newIngredient, auth.getUserId())
                 (requireActivity() as MainActivity).uploadIngredients()
                 (requireActivity() as MainActivity).notifyAdapter()
             }
@@ -125,7 +138,7 @@ class NewIngredientWindowFragment : DialogFragment() {
         }
 
 
-        if(binding.switchExpiryButton.isChecked){
+        if (binding.switchExpiryButton.isChecked) {
             if (binding.yearEditText.text.toString().isBlank() ||
                 binding.monthEditText.text.toString().isBlank() ||
                 binding.dayEditText.text.toString().isBlank()
@@ -189,13 +202,9 @@ class NewIngredientWindowFragment : DialogFragment() {
 
         // year
         et1.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                //pass
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                //pass
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
             // move cursor
             override fun afterTextChanged(s: Editable?) {
@@ -207,9 +216,7 @@ class NewIngredientWindowFragment : DialogFragment() {
 
         // month
         et2.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                //pass
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s.toString().isNotEmpty() && s.toString().toInt() > 12) {
@@ -226,9 +233,7 @@ class NewIngredientWindowFragment : DialogFragment() {
         })
 
         et3.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                //pass
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s.toString().isNotEmpty() && s.toString().toInt() > 31) {
@@ -237,9 +242,7 @@ class NewIngredientWindowFragment : DialogFragment() {
                 }
             }
 
-            override fun afterTextChanged(s: Editable?) {
-                //pass
-            }
+            override fun afterTextChanged(s: Editable?) {}
         })
 
 
@@ -295,6 +298,8 @@ class NewIngredientWindowFragment : DialogFragment() {
     }
 
     private fun setupAutoCompleteSearchBar() {
+
+        val autoCompleteTextView = binding.autoCompleteTextView
         val predefinedValues = listOf(
             "Alma",
             "Banán",
@@ -305,18 +310,79 @@ class NewIngredientWindowFragment : DialogFragment() {
             "Fekete Alma Paprika"
         )
 
-        val adapter = ArrayAdapter(
+        val adapter = ArrayAdapter<IngredientResponseData>(
             requireContext(),
             android.R.layout.simple_dropdown_item_1line,
-            predefinedValues
+            mutableListOf()
         )
 
-        val autoCompleteTextView = binding.autoCompleteTextView
-
         autoCompleteTextView.setAdapter(adapter)
-
-        //minimum letters before it suggests something
         autoCompleteTextView.threshold = 1
+
+        val handler = Handler(Looper.getMainLooper())
+        var searchRunnable: Runnable? = null
+
+
+        autoCompleteTextView.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                val query = s.toString()
+                if (query.isEmpty()) return
+
+                searchRunnable?.let { handler.removeCallbacks(it) }
+                searchRunnable = Runnable { fetchIngredients(query, adapter) }
+                handler.postDelayed(searchRunnable!!, 500) // Debounce 500ms
+            }
+        })
+
+        autoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
+            val selectedIngredient = adapter.getItem(position)
+            selectedIngredient?.let {
+                selectedIngredientId = it.id
+            }
+        }
+    }
+
+    private fun fetchIngredients(query: String, adapter: ArrayAdapter<IngredientResponseData>) {
+        val auth = Authenticator(requireActivity() as MainActivity)
+        val token = auth.getToken()
+        RetrofitClient.apiService.searchIngredients(token, query, 0)
+            .enqueue(object : Callback<PaginatedResponseData<IngredientResponseData>> {
+                override fun onResponse(
+                    call: Call<PaginatedResponseData<IngredientResponseData>>,
+                    response: Response<PaginatedResponseData<IngredientResponseData>>
+                ) {
+
+                    Toast.makeText(requireContext(), "request sent", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "igen", Toast.LENGTH_SHORT).show()
+
+                    if (response.isSuccessful) {
+                        response.body()?.let { result ->
+                            val ingredients = result.data.map { it }
+                            adapter.clear()
+                            Log.d("ingredientsList", ingredients.toString())
+
+                            adapter.addAll(ingredients)
+                            // will change after paging works, maybe
+                            adapter.notifyDataSetChanged()
+                        }
+                    } else {
+                        Log.e(
+                            "API_ERROR",
+                            "Error code: ${response.code()} - ${response.message()} - ${response.errorBody()?.string()}"
+                        )
+                        Toast.makeText(requireContext(), "nem vót jó", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<PaginatedResponseData<IngredientResponseData>>, t: Throwable) {
+
+                    Toast.makeText(requireContext(), "Error fetching ingredients: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     private fun setupUnitBar() {

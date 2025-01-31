@@ -8,11 +8,16 @@ import com.example.reciperadar.api_service.data_classes.register.RegisterData
 import com.example.reciperadar.api_service.data_classes.register.RegisterResponseData
 import com.example.reciperadar.api_service.data_classes.token.TokenData
 import com.example.reciperadar.api_service.data_classes.token.TokenResponseData
+import com.example.reciperadar.app.ingredients.data_classes.Ingredient
+import com.example.reciperadar.app.ingredients.data_classes.IngredientResponseData
+import com.example.reciperadar.app.ingredients.data_classes.PaginatedResponseData
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -37,4 +42,11 @@ interface ApiService {
         @Body user: IngredientsListData
     ): Call<IngredientsListResponseData>
 
+    @Headers("Accept: application/json")
+    @GET("ingredient-types")
+    fun searchIngredients(
+        @Header("Authorization") token: String?,
+        @Query("search") search: String,
+        @Query("page") page: Int = 0
+    ): Call<PaginatedResponseData<IngredientResponseData>>
 }

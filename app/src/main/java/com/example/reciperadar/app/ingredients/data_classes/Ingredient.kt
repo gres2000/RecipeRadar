@@ -3,6 +3,7 @@ package com.example.reciperadar.app.ingredients.data_classes
 import java.time.LocalDate
 
 data class Ingredient(
+    val id: Int,
     val name: String,
     val description: String?,
     val quantity: Float,

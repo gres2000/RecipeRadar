@@ -82,7 +82,7 @@ class Authenticator(val activity: AppCompatActivity) {
     }
 
     fun logout(callback: AuthCallBack) {
-        val token = "Bearer " + getToken()
+        val token = getToken()
         RetrofitClient.apiService.logoutUser(token).enqueue(object : Callback<TokenResponseData> {
             override fun onResponse(call: Call<TokenResponseData>, response: Response<TokenResponseData>) {
                 if (response.isSuccessful) {
@@ -109,8 +109,8 @@ class Authenticator(val activity: AppCompatActivity) {
     }
 
     //get token from shared preferences
-    fun getToken(): String? {
-        return sharedPref.getString("token", null)
+    fun getToken(): String {
+        return "Bearer " + sharedPref.getString("token", null)
     }
 
     fun getUserId(): String? {
