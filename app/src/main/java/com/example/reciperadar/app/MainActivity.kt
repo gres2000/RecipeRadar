@@ -3,6 +3,7 @@ package com.example.reciperadar.app
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.ImageButton
@@ -32,6 +33,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -170,13 +172,12 @@ class MainActivity : AppCompatActivity() {
         val request = IngredientsListData(ingredientList)
         val auth = Authenticator(this@MainActivity)
         val token = auth.getToken()
-        RetrofitClient.apiService.uploadIngredients(token, request).enqueue(object : Callback<IngredientsListResponseData> {
+        RetrofitClient.apiService.uploadIngredients(token, request).enqueue(object : Callback<ResponseBody> {
             //local response
-            override fun onResponse(call: Call<IngredientsListResponseData>, response: Response<IngredientsListResponseData>) {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
 
                 //server response
                 if (response.isSuccessful) {
-                    Toast.makeText(this@MainActivity, "upload successful", Toast.LENGTH_SHORT).show()
                     callback.onSuccess()
                 } else {
                     val ingredientsResponse = response.errorBody()?.string()
@@ -185,9 +186,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<IngredientsListResponseData>, t: Throwable) {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Toast.makeText(this@MainActivity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                callback.onError("Network Error: ${t.message}")
             }
         })
     }

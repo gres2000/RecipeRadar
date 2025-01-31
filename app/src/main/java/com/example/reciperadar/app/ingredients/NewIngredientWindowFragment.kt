@@ -300,15 +300,6 @@ class NewIngredientWindowFragment : DialogFragment() {
     private fun setupAutoCompleteSearchBar() {
 
         val autoCompleteTextView = binding.autoCompleteTextView
-        val predefinedValues = listOf(
-            "Alma",
-            "Banán",
-            "Cseresznye",
-            "Datolya",
-            "Szőlő",
-            "Narancs",
-            "Fekete Alma Paprika"
-        )
 
         val adapter = ArrayAdapter<IngredientResponseData>(
             requireContext(),
@@ -317,7 +308,7 @@ class NewIngredientWindowFragment : DialogFragment() {
         )
 
         autoCompleteTextView.setAdapter(adapter)
-        autoCompleteTextView.threshold = 1
+        autoCompleteTextView.threshold = 0
 
         val handler = Handler(Looper.getMainLooper())
         var searchRunnable: Runnable? = null
@@ -356,14 +347,10 @@ class NewIngredientWindowFragment : DialogFragment() {
                     response: Response<PaginatedResponseData<IngredientResponseData>>
                 ) {
 
-                    Toast.makeText(requireContext(), "request sent", Toast.LENGTH_SHORT).show()
-                    Toast.makeText(requireContext(), "igen", Toast.LENGTH_SHORT).show()
-
                     if (response.isSuccessful) {
                         response.body()?.let { result ->
                             val ingredients = result.data.map { it }
                             adapter.clear()
-                            Log.d("ingredientsList", ingredients.toString())
 
                             adapter.addAll(ingredients)
                             // will change after paging works, maybe
@@ -374,7 +361,6 @@ class NewIngredientWindowFragment : DialogFragment() {
                             "API_ERROR",
                             "Error code: ${response.code()} - ${response.message()} - ${response.errorBody()?.string()}"
                         )
-                        Toast.makeText(requireContext(), "nem vót jó", Toast.LENGTH_SHORT).show()
                     }
                 }
 

@@ -11,6 +11,7 @@ import com.example.reciperadar.api_service.data_classes.token.TokenResponseData
 import com.example.reciperadar.app.ingredients.data_classes.Ingredient
 import com.example.reciperadar.app.ingredients.data_classes.IngredientResponseData
 import com.example.reciperadar.app.ingredients.data_classes.PaginatedResponseData
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -40,7 +41,7 @@ interface ApiService {
     fun uploadIngredients(
         @Header("Authorization") token: String?,
         @Body user: IngredientsListData
-    ): Call<IngredientsListResponseData>
+    ): Call<ResponseBody>
 
     @Headers("Accept: application/json")
     @GET("ingredient-types")
